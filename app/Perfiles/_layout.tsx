@@ -1,7 +1,6 @@
-import { Stack } from 'expo-router';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function PerfilesLayout() {
   const router = useRouter();
@@ -11,9 +10,17 @@ export default function PerfilesLayout() {
     router.back(); 
   };
 
+  
+  const createProfile = () => {
+    // La función de navegación siempre debe estar en el router
+    router.navigate('/Perfiles/createprofile') 
+  };
+
+
   const handleSettings = () => {
     console.log("Ir a configuración");
     // router.push('/settings');
+    router.navigate('/Perfiles/parentalcontrol') 
   };
 
   return (
@@ -27,10 +34,45 @@ export default function PerfilesLayout() {
             headerShown: false, 
           }}
         />
+         <Stack.Screen
+          name="createprofile"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
+           <Stack.Screen
+          name="newprofile"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
+        <Stack.Screen
+          name="parentalcontrol"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
+        <Stack.Screen
+          name="config"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
       </Stack>
 
       {/* FOOTER FIJO: Los botones inferiores anclados */}
       <View style={styles.bottomButtons}>
+        <TouchableOpacity onPress={createProfile} style={styles.iconButton}>
+          <Ionicons name="arrow-undo-circle" size={40} color="#145c8cff" />
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleGoBack} style={styles.iconButton}>
           <Ionicons name="arrow-undo-circle" size={40} color="#4A148C" />
         </TouchableOpacity>
