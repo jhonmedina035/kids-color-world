@@ -1,6 +1,8 @@
 import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Animated } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Animated, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+// 1. IMPORTAR EXPO-SPEECH
+import * as Speech from 'expo-speech';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -8,14 +10,30 @@ export default function HomeScreen() {
   // 1. Crear el valor de animación
   const zoomAnim = useRef(new Animated.Value(0.95)).current; // Empezamos un poco más pequeño
 
+  // 2. Función para reproducir la voz
+  const speakReady = () => {
+    // Texto que quieres que se diga
+    const thingToSay = 'Listo para descubrir los colores?';
+    
+    // Configuración opcional (ej: velocidad, tono, idioma)
+    Speech.speak(thingToSay, {
+      language: 'es-ES', // Asegúrate de que el idioma esté disponible
+      rate: 0.9,         // Un poco más lento que la velocidad normal
+      pitch: 1.2,        // Un tono ligeramente más alto (opcional, para sonar más amigable)
+    });
+  };
+
   useEffect(() => {
-    // 2. Definir la animación (Zoom In y Zoom Out lento)
+    // 3. Llamar a la función de voz al cargar la pantalla
+    speakReady(); 
+
+    // Lógica de animación existente
     Animated.timing(
       zoomAnim,
       {
-        toValue: 1.05, // Valor final (un poco más grande)
-        duration: 800, // Duración de la animación
-        useNativeDriver: true, // Usa el driver nativo para mejor rendimiento
+        toValue: 1.05, 
+        duration: 800, 
+        useNativeDriver: true, 
       }
     ).start(() => {
         
@@ -31,8 +49,10 @@ export default function HomeScreen() {
 
 
   const handleStart = () => {
-  router.push('/Perfiles');
-};
+    // Opcional: Detener la voz si sigue hablando al hacer tap
+    Speech.stop(); 
+    router.push('/Perfiles');
+  };
 
   return (
     <ImageBackground
@@ -62,7 +82,7 @@ export default function HomeScreen() {
 }
 
 // ------------------------------------------------------------------
-// ESTILOS MEJORADOS (Subtítulo más grande y llamativo)
+// ESTILOS SIN CAMBIOS
 // ------------------------------------------------------------------
 
 const styles = StyleSheet.create({
@@ -85,17 +105,16 @@ const styles = StyleSheet.create({
     textShadowRadius: 5,
     marginBottom: 10,
   },
-  // ESTILOS DEL SUBTÍTULO MEJORADOS
   subtitle: {
-    fontSize: 32, // AUMENTADO: Letra mucho más grande
+    fontSize: 32, 
     textAlign: 'center',
-    fontWeight: '900', // MÁS GRUESO: Hace que se vea más sólido
-    color: '#FFFFFF', // Blanco
-    textShadowColor: '#FF6347', // SOMBRA LLAMATIVA: Un color primario (rojo tomate)
-    textShadowOffset: { width: 4, height: 4 }, // DESPLAZAMIENTO: Hace la sombra más notoria
-    textShadowRadius: 8, // DESENFOQUE: Sombra más suave
+    fontWeight: '900', 
+    color: '#FFFFFF', 
+    textShadowColor: '#FF6347', 
+    textShadowOffset: { width: 4, height: 4 }, 
+    textShadowRadius: 8, 
     marginBottom: 60, 
-    paddingHorizontal: 10, // Pequeño padding para el texto
+    paddingHorizontal: 10, 
   },
   button: {
     backgroundColor: '#209ad3ff',

@@ -9,15 +9,18 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 
-export default function TabTwoScreen() {
+/**
+ * Pantalla de Términos y Condiciones de Uso para padres de niños de 1-5 años.
+ */
+export default function TermsAndConditionsScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+      headerBackgroundColor={{ light: '#a8dadc', dark: '#1d3557' }} // Colores más amigables/temáticos
       headerImage={
         <IconSymbol
           size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
+          color="#457b9d" 
+          name="scroll.fill" 
           style={styles.headerImage}
         />
       }>
@@ -27,80 +30,82 @@ export default function TabTwoScreen() {
           style={{
             fontFamily: Fonts.rounded,
           }}>
-          Explore
+          Reglas de Mamá y Papá 📜
         </ThemedText>
       </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
+      <ThemedText style={{ marginBottom: 15 }}>
+        ¡Hola! Esta sección es para los padres y tutores. Lee estas reglas antes de que el pequeño empiece a jugar. Tu aceptación nos ayuda a mantener la app segura y divertida.
+      </ThemedText>
+      <ThemedText type="defaultSemiBold">
+        Última actualización: 16 de Octubre de 2025
+      </ThemedText>
+      
+      {/* --- Sección de Uso y Edad --- */}
+      <Collapsible title="👶 Sobre el Usuario (Niños y Padres)">
         <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
+          Esta aplicación está diseñada para ser utilizada por niños entre {' '}
+          <ThemedText type="defaultSemiBold">1 y 5 años</ThemedText>, siempre bajo la {' '}
+          <ThemedText type="defaultSemiBold">supervisión de un adulto</ThemedText> (tutor o padre).
         </ThemedText>
         <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
+          Al usar la app, confirmas que eres un adulto responsable y aceptas estos términos en nombre del niño.
         </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
+      </Collapsible>
+
+      {/* --- Sección de Seguridad y Privacidad (Adaptada a COPPA/GDPR-K) --- */}
+      <Collapsible title="🔒 Privacidad de los Pequeños">
+        <ThemedText>
+          <ThemedText type="defaultSemiBold">No recopilamos información personal</ThemedText> del niño (nombre, fotos, ubicación, etc.) que lo pueda identificar.
+        </ThemedText>
+        <ThemedText>
+          Usamos datos anónimos sobre cómo se usa la app (ej: qué juego es más popular) para mejorar la experiencia. ¡Solo para hacerla mejor!
+        </ThemedText>
+        {/* Enlace a la política de privacidad real */}
+        <ExternalLink href="https://es.wikipedia.org/wiki/Pol%C3%ADtica_de_privacidad">
+          <ThemedText type="link">Ver Política de Privacidad completa</ThemedText>
         </ExternalLink>
       </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
+
+      {/* --- Sección de Contenido y Comportamiento --- */}
+      <Collapsible title="🚫 Prohibido: Anuncios y Compras">
         <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+          Esta versión de la app {' '}
+          <ThemedText type="defaultSemiBold">no tiene anuncios de terceros</ThemedText> ni enlaces a redes sociales. ¡Es un entorno seguro!
+        </ThemedText>
+        <ThemedText>
+          Si hay compras dentro de la app, estas siempre requerirán la {' '}
+          <ThemedText type="defaultSemiBold">confirmación de un adulto</ThemedText> con una clave o PIN.
         </ThemedText>
       </Collapsible>
-      <Collapsible title="Images">
+      
+      {/* --- Sección de Propiedad Intelectual (General) --- */}
+      <Collapsible title="🎨 Contenido de la App">
         <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
+          Todos los dibujos, canciones y juegos son propiedad de [Nombre de la Empresa].
         </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
         <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
+          Permitimos usar las capturas de pantalla de tu hijo en redes, ¡etiquétanos! Pero la {' '}
+          <ThemedText type="defaultSemiBold">reproducción o copia</ThemedText> de nuestro contenido no está permitida.
         </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
       </Collapsible>
-      <Collapsible title="Animations">
+
+      {/* --- Sección de Aceptación (Final) --- */}
+      <ThemedView style={{ marginTop: 20 }}>
+        <ThemedText type="subtitle" style={{ color: '#457b9d', fontFamily: Fonts.rounded }}>
+            ¡Gracias por Cuidarnos!
+        </ThemedText>
         <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
+            Al continuar usando la aplicación, aceptas automáticamente todas estas reglas. Si no estás de acuerdo, por favor desinstala la aplicación.
         </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
+      </ThemedView>
+
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   headerImage: {
-    color: '#808080',
+    color: '#457b9d', // Color del ícono en el header
     bottom: -90,
     left: -35,
     position: 'absolute',
@@ -108,5 +113,6 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
+    marginBottom: 10,
   },
 });
