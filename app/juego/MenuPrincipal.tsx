@@ -16,8 +16,8 @@ export default function MenuPrincipal() {
       // Reproduce el saludo
       Speech.speak("Qué quieres hacer hoy?", {
         language: 'es',
-        pitch: 1.0, // Ajuste de tono opcional
-        rate: 1.0, // Ajuste de velocidad opcional
+        pitch: 1.0, 
+        rate: 1.0, 
       });
     };
 
@@ -50,7 +50,7 @@ export default function MenuPrincipal() {
 
         <TouchableOpacity
           style={[styles.button, styles.playButton]}
-          //onPress={() => router.push('/juego/juegos')}
+          onPress={() => router.push('/juego/juegos/NivelFacil')}
         >
           <MaterialCommunityIcons name="cube-outline" size={30} color="#fff" />
           <Text style={styles.buttonText}>Juegos con colores</Text>
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)', // Fondo oscuro y semitransparente
+    backgroundColor: 'rgba(0, 0, 0, 0.4)', 
     paddingVertical: 50,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -88,10 +88,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 20,
-    paddingVertical: 18, // Aumentado para hacerlo más alto
-    paddingHorizontal: 30, // Aumentado para hacerlo más ancho
-    marginVertical: 15, // Aumentado el margen
-    width: 300, // Ancho fijo más grande
+    paddingVertical: 18, 
+    paddingHorizontal: 30, 
+    marginVertical: 15, 
+    width: 300, 
     justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -100,10 +100,10 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   learnButton: {
-    backgroundColor: '#38B47C', // Un tono de verde más vibrante
+    backgroundColor: '#38B47C', 
   },
   playButton: {
-    backgroundColor: '#FF6F5E', // Un tono de rojo anaranjado
+    backgroundColor: '#FF6F5E', 
   },
   buttonText: {
     fontSize: 20, 
