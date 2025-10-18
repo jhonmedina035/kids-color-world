@@ -1,21 +1,32 @@
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function ConfigProfileScreen() {   
+export default function EditProfileScreen() {   
   const router = useRouter(); 
   const [name, setName] = useState('');
   const [image, setImage] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState(''); // <-- Nuevo estado
 
+  const { data }:any = useLocalSearchParams(); // obtiene los parámetros
+  const profile = data ? JSON.parse(data) : null; // convierte el string a objeto
+
+ useEffect(() => {
+    if (profile) {
+      console.log('Perfil recibido:', profile);
+      setName(profile.name)   
+      setSelectedDifficulty(profile.dificult)
+    }
+  }, [profile]);
+
   const handlePress = () => {
     alert(`Hola, ${name || 'desconocido'}! Dificultad: ${selectedDifficulty || 'No seleccionada'}`);
   };
 
-  const saveProfile = () => {
-    router.navigate('/Perfiles')
+  const editProfile = () => {
+    router.navigate('/Perfiles/profilemanagement')
   };
 
   const pickImage = async () => {
@@ -63,14 +74,16 @@ export default function ConfigProfileScreen() {
   return (
     <LinearGradient colors={["#C5A6FF", "#B0E0FF"]} style={styles.container}>
       <View style={styles.overlay}>
-        <Text style={styles.titleContainer}>Agregar perfil</Text>
+        <Text style={styles.titleContainer}>Editar perfil</Text>
 
         <View style={{ justifyContent: 'flex-start', top: 20, alignItems: 'center' }}>
           <TouchableOpacity onPress={pickImage}>
             <View style={styles.circle}>
               <Image
-                source={image !== '' ? { uri: image } : require('@/assets/images/profile.png')}
-                style={styles.profile}
+               source={image? { uri: image } // si el usuario seleccionó una nueva foto con ImagePicker
+                    : profile?.image || require('@/assets/images/profile.png') // usa la imagen local o la predeterminada
+                }
+                  style={styles.profile}
               />
             </View>
           </TouchableOpacity>
@@ -113,8 +126,8 @@ export default function ConfigProfileScreen() {
 
           <View style={{ flex: 1, marginTop: 30, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
             <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-              <TouchableOpacity style={styles.button} onPress={() => saveProfile()}>
-                <Text style={styles.buttonText}>Guardar</Text>
+              <TouchableOpacity style={styles.button} onPress={() => editProfile()}>
+                <Text style={styles.buttonText}>Editar</Text>
               </TouchableOpacity>
             </Animated.View>
           </View>

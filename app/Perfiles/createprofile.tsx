@@ -58,7 +58,7 @@ export default function CreateProfileScreen() {
         <View style={{ flexDirection:'row', marginTop:100, justifyContent:'center', alignItems:'center'}}>
             <TouchableOpacity style={styles.button} onPress={handlePress}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons name="person-circle-outline" size={24} color="white" style={{ marginRight: 8 }} />
+                    <Ionicons name="happy-outline" size={24} color="white" style={{ marginRight: 8 }} />
                     <Text style={styles.buttonText}>Crear nuevo perfil</Text>
                   </View>
                 </TouchableOpacity>

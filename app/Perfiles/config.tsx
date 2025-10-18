@@ -2,15 +2,21 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View,Image } from 'react-native';
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ConfigScreen() {
 
   const router = useRouter(); 
 
   const handlePress = () => {
-    router.navigate('/Perfiles/newprofile')
+ /*    router.navigate('/Perfiles/newprofile') */
   };
+
+   const handlePressProfile = () => {
+    router.navigate('/Perfiles/profilemanagement')
+  };
+
+
  const pulseAnim = useRef(new Animated.Value(1)).current;
   
     // --- Lógica de la animación ---
@@ -77,7 +83,7 @@ export default function ConfigScreen() {
             </View>
 
             <View style={{ flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-                <TouchableOpacity style={styles.button} onPress={handlePress}>
+                <TouchableOpacity style={styles.button} onPress={handlePressProfile}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Ionicons name="happy-outline" size={24} color="white" style={{ marginRight: 8 }} />
                     <Text style={styles.buttonText}>Perfiles</Text>
