@@ -82,7 +82,7 @@ export default function PerfilesManagementScreen() {
       </View>
 
       {/* Botón para crear nuevo perfil */}
-      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+      <View style={{ flexDirection: "row", justifyContent: "center", marginBottom:40 }}>
         <TouchableOpacity style={styles.button} onPress={handlePress}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Ionicons name="happy-outline" size={24} color="white" style={{ marginRight: 8 }} />
