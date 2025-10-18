@@ -1,19 +1,35 @@
-import { Stack } from 'expo-router';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function PerfilesLayout() {
   const router = useRouter();
+ const segments = useSegments();
+  const currentScreen = segments[segments.length - 1];
+  
+
+  // Definimos qué botones mostrar por pantalla
+  const footerButtonsConfig: Record<string, ('back' | 'settings')[]> = {
+    index: ['back', 'settings'],       // Ambos botones
+    Perfiles: ['back', 'settings'],   // Ambos botones
+    createprofile: ['back'],          // Solo "back"
+    editprofile: [],                  // Ningún botón
+    parentalcontrol: ['back'],        // Solo "settings"
+    newprofile: ['back'],             // Ningún botón
+  };
+
+  const buttonsToShow = footerButtonsConfig[currentScreen] || [];
 
   const handleGoBack = () => {
     // La función de navegación siempre debe estar en el router
     router.back(); 
   };
 
+  
   const handleSettings = () => {
     console.log("Ir a configuración");
     // router.push('/settings');
+    router.navigate('/Perfiles/parentalcontrol') 
   };
 
   return (
@@ -27,18 +43,71 @@ export default function PerfilesLayout() {
             headerShown: false, 
           }}
         />
+         <Stack.Screen
+          name="createprofile"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
+           <Stack.Screen
+          name="newprofile"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
+        <Stack.Screen
+          name="parentalcontrol"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
+        <Stack.Screen
+          name="config"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
+        <Stack.Screen
+          name="profilemanagement"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+          }}
+          
+        />
+        <Stack.Screen
+          name="editprofile"
+          options={{
+            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
+            headerShown: false, 
+        }}
+          
+        />
       </Stack>
 
       {/* FOOTER FIJO: Los botones inferiores anclados */}
-      <View style={styles.bottomButtons}>
-        <TouchableOpacity onPress={handleGoBack} style={styles.iconButton}>
-          <Ionicons name="arrow-undo-circle" size={40} color="#4A148C" />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleSettings} style={styles.iconButton}>
-          <Ionicons name="settings-sharp" size={40} color="#4A148C" />
-        </TouchableOpacity>
-      </View>
+      {buttonsToShow.length > 0 && (
+        <View style={styles.bottomButtons}>
+          {buttonsToShow.includes('back') && (
+            <TouchableOpacity onPress={handleGoBack} style={styles.iconButton}>
+              <Ionicons name="arrow-undo-circle" size={40} color="#4A148C" />
+            </TouchableOpacity>
+          )}
+          {buttonsToShow.includes('settings') && (
+            <TouchableOpacity onPress={handleSettings} style={styles.iconButton}>
+              <Ionicons name="settings-sharp" size={40} color="#4A148C" />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
     </View>
   );
 }

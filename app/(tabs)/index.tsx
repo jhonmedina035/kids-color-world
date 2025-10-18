@@ -51,7 +51,7 @@ export default function HomeScreen() {
   const handleStart = () => {
     // Opcional: Detener la voz si sigue hablando al hacer tap
     Speech.stop(); 
-    router.push('/Perfiles');
+    router.push('/Perfiles/createprofile');
   };
 
   return (
