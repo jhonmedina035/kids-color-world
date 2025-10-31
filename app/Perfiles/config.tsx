@@ -9,7 +9,7 @@ export default function ConfigScreen() {
   const router = useRouter(); 
 
   const handlePress = () => {
- /*    router.navigate('/Perfiles/newprofile') */
+      router.navigate('/Perfiles/Progress')
   };
 
    const handlePressProfile = () => {

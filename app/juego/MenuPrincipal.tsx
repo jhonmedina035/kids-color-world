@@ -3,18 +3,19 @@ import { View, Text, TouchableOpacity, ImageBackground, StyleSheet, Platform } f
 import { useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Speech from 'expo-speech';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function MenuPrincipal() {
   const router = useRouter();
+  const { userName } = useLocalSearchParams<{ userName: string }>();
+  console.log("Usuario actual:", userName);
 
   // Función TTS para el saludo
   useEffect(() => {
     const speakGreeting = async () => {
-      // Asegura que no haya otra reproducción de audio activa
-      await Speech.stop(); 
-
-      // Reproduce el saludo
-      Speech.speak("Qué quieres hacer hoy?", {
+      await Speech.stop();
+      const namePart = userName ? ` ${userName}` : '';
+      Speech.speak(`¡Hola${namePart}! ¿Qué quieres hacer hoy?`, {
         language: 'es',
         pitch: 1.0, 
         rate: 1.0, 
@@ -23,26 +24,22 @@ export default function MenuPrincipal() {
 
     speakGreeting();
 
-    // Limpieza: detiene el audio si el componente se desmonta
     return () => {
       Speech.stop();
     };
-  }, []);
+  }, [userName]);
 
   return (
     <ImageBackground
-      // Nota: Asegúrate de que la ruta de la imagen sea correcta en tu proyecto
       source={require('../../assets/images/background_image.jpeg')} 
       style={styles.background}
       resizeMode="cover"
     >
       <View style={styles.container}>
-        
         <Text style={styles.title}>¡Hola!</Text>
-
         <TouchableOpacity
           style={[styles.button, styles.learnButton]}
-          onPress={() => router.push('/juego/Aprender/NivelFacil')}
+          onPress={() => router.push({ pathname: '/juego/Aprender/NivelFacil', params: { userName } })}
         >
           <Ionicons name="color-palette-outline" size={30} color="#fff" />
           <Text style={styles.buttonText}>Aprender colores</Text>
@@ -50,7 +47,7 @@ export default function MenuPrincipal() {
 
         <TouchableOpacity
           style={[styles.button, styles.playButton]}
-          onPress={() => router.push('/juego/juegos/NivelFacil')}
+          onPress={() => router.push({ pathname: '/juego/juegos/NivelFacil', params: { userName } })}
         >
           <MaterialCommunityIcons name="cube-outline" size={30} color="#fff" />
           <Text style={styles.buttonText}>Juegos con colores</Text>

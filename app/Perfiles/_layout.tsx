@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter, useSegments } from 'expo-router';
+import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function PerfilesLayout() {
@@ -35,64 +36,8 @@ export default function PerfilesLayout() {
   return (
     <View style={styles.fullScreen}>
       {/* Stack.Screen renderiza el contenido de la pantalla (PerfilesScreen.tsx) */}
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
-            headerShown: false, 
-          }}
-        />
-         <Stack.Screen
-          name="createprofile"
-          options={{
-            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
-            headerShown: false, 
-          }}
-          
-        />
-           <Stack.Screen
-          name="newprofile"
-          options={{
-            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
-            headerShown: false, 
-          }}
-          
-        />
-        <Stack.Screen
-          name="parentalcontrol"
-          options={{
-            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
-            headerShown: false, 
-          }}
-          
-        />
-        <Stack.Screen
-          name="config"
-          options={{
-            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
-            headerShown: false, 
-          }}
-          
-        />
-        <Stack.Screen
-          name="profilemanagement"
-          options={{
-            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
-            headerShown: false, 
-          }}
-          
-        />
-        <Stack.Screen
-          name="editprofile"
-          options={{
-            // Ocultamos la barra de encabezado nativa para que el PerfilesScreen controle todo el diseño
-            headerShown: false, 
-        }}
-          
-        />
-      </Stack>
-
+      <Stack screenOptions={{ headerShown: false }} />
+      
       {/* FOOTER FIJO: Los botones inferiores anclados */}
       {buttonsToShow.length > 0 && (
         <View style={styles.bottomButtons}>

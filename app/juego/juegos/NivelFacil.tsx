@@ -1,17 +1,16 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, FlatList, Alert, NativeSyntheticEvent, NativeScrollEvent, Platform, ActivityIndicator } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import { useRouter } from 'expo-router'; 
-import * as Speech from 'expo-speech'; 
-
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import * as Speech from 'expo-speech';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Dimensions, FlatList, Image, NativeScrollEvent, NativeSyntheticEvent, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useLocalSearchParams } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = width;
-
-// Ruta base para las imágenes, asumiendo la estructura del usuario.
 const IMAGE_BASE_PATH = '../../../assets/images/iconosJuegos/';
 
-// --- 1. CONFIGURACIÓN Y DATOS DE COLORES Y JUEGO ---
+
 
 interface ColorGameData {
   id: string;
@@ -22,8 +21,16 @@ interface ColorGameData {
   images: { id: string; src: any; color: string; }[]; 
 }
 
+interface ColorGameCardProps {
+  data: ColorGameData;
+  onCorrectAnswer: () => void; 
+  isSpeaking: boolean;
+  setIsSpeaking: (value: boolean) => void;
+  cardIndex: number; 
+  currentIndex: number; 
+}
 
-// Nota: Se han descomentado y completado todos los niveles, asumiendo que las imágenes existen en el path.
+
 const IMAGES_BY_COLOR = {
   azul: [
     { id: 'pez_azul', src: require(`${IMAGE_BASE_PATH}pez_azul-removebg-preview.png`), color: 'azul' },
@@ -73,6 +80,27 @@ const IMAGES_BY_COLOR = {
     { id: 'amarillo_pato', src: require(`${IMAGE_BASE_PATH}Pato_amarillo-removebg-preview.png`), color: 'amarillo' },
     { id: 'rojo_fresa', src: require(`${IMAGE_BASE_PATH}Fresa_roja-removebg-preview.png`), color: 'rojo' },
   ],
+};
+
+const saveRecordForChild = async (childName: string, corrects: number, errors: number, time: string) => {
+  try {
+    const newRecord = {
+      childName,
+      corrects,
+      errors,
+      time,
+      date: new Date().toISOString()
+    };
+
+    const storedData = await AsyncStorage.getItem("colorGameRecords");
+    const prevData = storedData ? JSON.parse(storedData) : [];
+
+    prevData.push(newRecord);
+
+    await AsyncStorage.setItem("colorGameRecords", JSON.stringify(prevData));
+  } catch (error) {
+    console.log("Error guardando datos:", error);
+  }
 };
 
 
@@ -143,30 +171,19 @@ const GAME_LEVELS: ColorGameData[] = [
   },
 ];
 
-// --- 2. COMPONENTE DE LA TARJETA DEL JUEGO DE COLOR ---
-
-interface ColorGameCardProps {
-  data: ColorGameData;
-  onCorrectAnswer: () => void; // Callback para avanzar al siguiente nivel
-  isSpeaking: boolean;
-  setIsSpeaking: (value: boolean) => void;
-  cardIndex: number; // Nuevo: índice de esta tarjeta
-  currentIndex: number; // Nuevo: índice de la tarjeta visible (actual)
-}
 
 const ColorGameCard: React.FC<ColorGameCardProps> = React.memo(({ data, onCorrectAnswer, isSpeaking, setIsSpeaking, cardIndex, currentIndex }) => {
   const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
   const [answeredCorrectly, setAnsweredCorrectly] = useState(false);
   const [hasSpoken, setHasSpoken] = useState(false); 
-  // FIX: Se cambió el tipo de useRef a 'any' para evitar el conflicto con el tipo de retorno de setTimeout (number vs NodeJS.Timeout)
-  const speakingTimeoutRef = useRef<any | null>(null); // Ref para el timeout de fallback
+  const speakingTimeoutRef = useRef<any | null>(null); 
 
   // Determinar color del texto de la pregunta para contraste
   const getQuestionTextColor = (colorName: string) => {
     switch (colorName) {
-      case 'amarillo': return '#000'; // Negro para amarillo
-      case 'negro': return '#fff'; // Blanco para negro
-      default: return '#000'; // Predeterminado negro
+      case 'amarillo': return '#000'; 
+      case 'negro': return '#fff'; 
+      default: return '#000';
     }
   };
 
@@ -257,25 +274,25 @@ const ColorGameCard: React.FC<ColorGameCardProps> = React.memo(({ data, onCorrec
     setSelectedImageId(imageId); // Marcar la imagen seleccionada
 
     if (imageColor === data.targetColor) {
-      setAnsweredCorrectly(true); // Marcar como correcto
-      await speak("¡Correcto! Muy bien.", { pitch: 1.2 }); // Voz más animada
-      setTimeout(() => {
-        setAnsweredCorrectly(false); // Reiniciar estado para la siguiente tarjeta
-        setSelectedImageId(null);
-        onCorrectAnswer(); // Avanzar a la siguiente tarjeta
-      }, 1500); // Dar tiempo para el feedback visual y de audio
-    } else {
-      // Mensaje de error, recalcando el color buscado
-      await speak(`Este no es. Inténtalo de nuevo. Buscamos el color ${data.targetColor}.`, { pitch: 0.9 }); 
-      setTimeout(() => {
-        setSelectedImageId(null); // Quitar selección después del feedback
-      }, 1000);
-    }
+        setAnsweredCorrectly(true);
+        await speak("¡Correcto! Muy bien.", { pitch: 1.2 });
+
+        setTimeout(() => {
+          setAnsweredCorrectly(false);
+          setSelectedImageId(null);
+          onCorrectAnswer(true);
+        }, 1500);
+      } else {
+        await speak(`Este no es. Buscamos el color ${data.targetColor}.`);
+        onCorrectAnswer(false);
+
+        setTimeout(() => {
+          setSelectedImageId(null);
+        }, 1000);
+      }
   }, [data.targetColor, onCorrectAnswer, isSpeaking, answeredCorrectly, speak]);
 
   const questionParts = data.question.split(data.targetColor);
-  
-  // FIX DE TIPADO: quitamos 'fontWeight' de aquí ya que styles.questionText ya lo tiene.
   const targetColorStyle = { color: data.colorCode }; 
 
   return (
@@ -325,14 +342,20 @@ const ColorGameCard: React.FC<ColorGameCardProps> = React.memo(({ data, onCorrec
   );
 });
 
-// --- 3. COMPONENTE PRINCIPAL (FlatList) ---
 
 const NivelFacil = () => {
+
   const router = useRouter(); 
   const flatListRef = useRef<FlatList<ColorGameData>>(null); 
-  
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0); 
+  const { userName } = useLocalSearchParams<{ userName: string }>();
+  console.log("Usuario actual:", userName);
+  // resultados por niño (estado local)
+  const [corrects, setCorrects] = useState<number>(0);
+  const [errors, setErrors] = useState<number>(0);
+  // marcamos tiempo de inicio con useRef para que no se reinicie en rerenders
+  const startTimeRef = useRef<number>(Date.now());
   
   // Limpiar TTS al salir del componente
   useEffect(() => {
@@ -350,23 +373,40 @@ const NivelFacil = () => {
     }
   }, [currentIndex]);
 
-  const handleCorrectAnswer = useCallback(() => {
-    if (currentIndex < GAME_LEVELS.length - 1) {
-      const newIndex = currentIndex + 1;
-      flatListRef.current?.scrollToIndex({ index: newIndex, animated: true });
-      setCurrentIndex(newIndex);
-    } else {
-      Alert.alert("¡Felicidades!", "Has completado todos los niveles de colores.", [
-        { text: "Volver al menú", onPress: () => router.back() }
-      ]);
-      Speech.speak("¡Felicidades! Has completado todos los niveles de colores.", { language: 'es' });
-    }
-  }, [currentIndex, router]);
 
   // Función para volver al menú principal
   const handleGoBack = () => {
     Speech.stop(); 
     router.back(); 
+  };
+
+  const handleAnswer = (isCorrect: boolean) => {
+    
+    if (isCorrect) {
+      setCorrects(prev => prev + 1);
+    } else {
+      setErrors(prev => prev + 1);
+      return;
+    }
+
+    if (currentIndex < GAME_LEVELS.length - 1) {
+      const newIndex = currentIndex + 1;
+      flatListRef.current?.scrollToIndex({ index: newIndex, animated: true });
+      setCurrentIndex(newIndex);
+    } else {
+      const totalTime = ((Date.now() - startTimeRef.current) / 1000).toFixed(1);
+      const finalCorrects = isCorrect ? corrects + 1 : corrects;
+      const finalErrors = isCorrect ? errors : errors + 1;
+      
+      Alert.alert(
+        "¡Felicidades!",
+        `Terminaste 😄\n\n✅ Aciertos: ${finalCorrects}\n❌ Errores: ${finalErrors}\n⏱️ Tiempo: ${totalTime} s`,
+        [{ text: "Volver al menú", onPress: () => router.back() }]
+      );
+      saveRecordForChild(userName, finalCorrects, finalErrors, totalTime);
+
+      Speech.speak("¡Muy bien! Has terminado.", { language: 'es' });
+    }
   };
 
   return (
@@ -380,12 +420,12 @@ const NivelFacil = () => {
       <FlatList
         ref={flatListRef} 
         data={GAME_LEVELS}
-        renderItem={({ item, index }) => ( // <- Añadimos 'index' aquí
-          <ColorGameCard 
-            data={item} 
-            cardIndex={index} // <- Pasamos el índice de la tarjeta
-            currentIndex={currentIndex} // <- Pasamos el índice actual de la FlatList
-            onCorrectAnswer={handleCorrectAnswer} 
+        renderItem={({ item, index }) => (
+          <ColorGameCard
+            data={item}
+            cardIndex={index}
+            currentIndex={currentIndex}
+            onCorrectAnswer={handleAnswer}
             isSpeaking={isSpeaking}
             setIsSpeaking={setIsSpeaking}
           />
@@ -406,7 +446,6 @@ const NivelFacil = () => {
   );
 };
 
-// --- 4. ESTILOS ---
 
 const styles = StyleSheet.create({
   mainContainer: {
