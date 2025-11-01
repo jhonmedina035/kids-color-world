@@ -1,19 +1,39 @@
-import React, { useRef, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Animated } from "react-native";
-import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+
+
 
 // --- DATOS QUEMADOS ---
-const profiles = [
+/* const profiles = [
   // Asegúrate de que las rutas de las imágenes sean correctas en tu proyecto
   { name: "Pablo", image: require("../../assets/images/img_niño2.png"), id: "pablo" },
   { name: "Mariana", image: require("../../assets/images/img_niña1.png"), id: "mariana" },
   { name: "Mateo", image: require("../../assets/images/img-niño3.png"), id: "mateo" },
-];
+]; */
 
 export default function PerfilesScreen() {
+  const [profiles, setProfiles] = useState<any[]>([]);
   const router = useRouter();
   const pulseAnim = useRef(new Animated.Value(1)).current;
+
+    // --- Cargar perfiles guardados en AsyncStorage ---
+  useEffect(() => {
+    const loadProfiles = async () => {
+      try {
+        const storedProfiles = await AsyncStorage.getItem("profile");
+        const parsed = storedProfiles ? JSON.parse(storedProfiles) : [];
+        setProfiles(parsed);
+      } catch (err) {
+        console.error("Error al cargar perfiles:", err);
+      }
+    };
+
+    loadProfiles();
+  }, []);
 
   // --- Lógica de la animación de pulso del título ---
   useEffect(() => {
@@ -66,7 +86,7 @@ export default function PerfilesScreen() {
 
       {/* 2. CONTENEDOR DE PERFILES (SECCIÓN CENTRAL) */}
       <View style={styles.profilesContainer}>
-        {profiles.map((p, index) => (
+        {profiles.map((p:any, index:number) => (
           <TouchableOpacity 
             key={p.id || index} 
             style={styles.profileCard}
@@ -74,7 +94,7 @@ export default function PerfilesScreen() {
             onPress={() => handleProfileSelect(p.name)} 
             activeOpacity={0.7}
           >
-            <Image source={p.image} style={styles.avatar} resizeMode="contain" />
+            <Image source={{uri: p.image }} style={styles.avatar} resizeMode="contain" />
             <Text style={styles.profileName}>{p.name}</Text>
           </TouchableOpacity>
         ))}

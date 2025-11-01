@@ -3,14 +3,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from "react";
 import {
-    Alert,
-    FlatList,
-    Pressable,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 const STORAGE_KEY = "colorGameRecords";
@@ -123,7 +123,7 @@ const Progress: React.FC = () => {
           </Text>
         </View>
 
-        <View style={styles.cardRight}>
+        <View>
           <Pressable
             android_ripple={{ color: "#ffb3b3", radius: 24 }}
             onPress={() => handleDelete(index)}
@@ -223,10 +223,10 @@ const styles = StyleSheet.create({
   },
   avatarText: { color: "#274472", fontWeight: "800", fontSize: 18 },
 
-  cardBody: { flex: 1, paddingRight: 8 },
+  cardBody: {  paddingRight: 8 },
   name: { fontSize: 16, fontWeight: "800", color: "#213547", marginBottom: 8 },
 
-  row: { flexDirection: "row", gap: 8, marginBottom: 6 },
+  row: { flexDirection: "row", gap:5, marginBottom: 6 },
   badge: {
     paddingHorizontal: 8,
     paddingVertical: 6,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
 
   dateText: { color: "#7C8A97", fontSize: 12 },
 
-  cardRight: { marginLeft: 6 },
+
   iconButton: {
     backgroundColor: "#FF6B6B",
     width: 44,

@@ -1,10 +1,12 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground, Animated, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import React, { useEffect, useRef } from 'react';
+import { Animated, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // 1. IMPORTAR EXPO-SPEECH
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
 
-export default function HomeScreen() {
+export default function  HomeScreen() {
+
   const router = useRouter();
   
   // 1. Crear el valor de animación
@@ -48,10 +50,18 @@ export default function HomeScreen() {
   }, [zoomAnim]);
 
 
-  const handleStart = () => {
+  const handleStart = async () => {
+    const storedProfiles = await AsyncStorage.getItem("profile")
+    const profiles = storedProfiles ? JSON.parse(storedProfiles) : [] 
     // Opcional: Detener la voz si sigue hablando al hacer tap
-    Speech.stop(); 
-    router.push('/Perfiles/createprofile');
+    Speech.stop();
+    // Valida si hay perfiles o sino para que vaya a la vista de crear perfiles
+    if(profiles.length==0){
+     router.push('/Perfiles/createprofile');
+    }else{
+     router.push('/Perfiles');
+    }
+
   };
 
   return (

@@ -28,8 +28,6 @@ export default function PerfilesLayout() {
 
   
   const handleSettings = () => {
-    console.log("Ir a configuración");
-    // router.push('/settings');
     router.navigate('/Perfiles/parentalcontrol') 
   };
 

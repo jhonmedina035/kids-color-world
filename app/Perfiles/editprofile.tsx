@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -14,20 +15,37 @@ export default function EditProfileScreen() {
   const profile = data ? JSON.parse(data) : null; // convierte el string a objeto
 
  useEffect(() => {
-    if (profile) {
-      console.log('Perfil recibido:', profile);
+    if (profile) {    
       setName(profile.name)   
-      setSelectedDifficulty(profile.dificult)
+      setSelectedDifficulty(profile.difficultyLevel)
+      setImage(profile.image)
     }
-  }, [profile]);
+  }, []);
 
-  const handlePress = () => {
-    alert(`Hola, ${name || 'desconocido'}! Dificultad: ${selectedDifficulty || 'No seleccionada'}`);
-  };
 
-  const editProfile = () => {
-    router.navigate('/Perfiles/profilemanagement')
-  };
+const editProfile = async () => {
+  try {
+    const storedData = await AsyncStorage.getItem("profile");
+    let data = storedData ? JSON.parse(storedData) : [];
+
+    // Actualiza el perfil directamente usando map
+    data = data.map((item: any) =>
+      item.id === profile.id
+        ? {
+            ...item,
+            name,
+            difficultyLevel: selectedDifficulty,
+            image,
+          }
+        : item
+    );
+
+    await AsyncStorage.setItem("profile", JSON.stringify(data));
+    router.navigate("/Perfiles/profilemanagement");
+  } catch (error) {
+    console.error("Error al editar el perfil:", error);
+  }
+};
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -41,10 +59,12 @@ export default function EditProfileScreen() {
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
+      base64: true,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+      setImage(base64Image);
     }
   };
 

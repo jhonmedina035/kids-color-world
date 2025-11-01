@@ -1,48 +1,65 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ModalConfirm from "../modals/modalconfirm";
 
-const profiles = [
-  { name: "Pablo", image: require("../../assets/images/img_niño2.png"), id: "pablo", dificult:'Fácil' },
-  { name: "Mariana", image: require("../../assets/images/img_niña1.png"), id: "mariana", dificult:'Medio' },
-  { name: "Mateo", image: require("../../assets/images/img-niño3.png"), id: "mateo", dificult:'Medio' },
-];
 
 export default function PerfilesManagementScreen() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedProfile, setSelectedProfile] = useState<any>(null);
+  const [selectedProfileId, setSelectedProfileId] = useState<any>(null);
+  const [profiles, setProfiles] = useState<any[]>([]);
+
+
+  useEffect(() => {
+    const loadProfiles = async () => {
+      try {
+        const storedProfiles = await AsyncStorage.getItem("profile");
+        const parsed = storedProfiles ? JSON.parse(storedProfiles) : [];
+        setProfiles(parsed);
+      } catch (err) {
+        console.error("Error al cargar perfiles:", err);
+      }
+    };
+
+    loadProfiles();
+  }, []);
 
   const handleProfileSelect = (profile: any) => {
-
-    console.log(`Perfil seleccionado: ${JSON.stringify(profile) }`);
     router.push({
     pathname: '/Perfiles/editprofile',
     params: { data: JSON.stringify(profile) }, // se envía como string
     });
   };
 
-  const handleDeleteProfile=(profile:any)=>{ 
-      setSelectedProfile(profile); // Guarda cuál perfil se quiere eliminar
+  const handleDeleteProfile=(id:any)=>{ 
+      setSelectedProfileId(id); // Guarda cuál perfil se quiere eliminar
       setModalVisible(true);       // Muestra el modal
   }
 
-  const confirmDelete = () => {
-    console.log("Perfil eliminado:", selectedProfile?.name);
+  const confirmDelete = async() => {  
+    //eliminar del localstorage
+    const storedProfiles = await AsyncStorage.getItem("profile");
+    var parsed = storedProfiles ? JSON.parse(storedProfiles) : [];
+
+    //quitar de la lista el perfil a eliminar
+    parsed = parsed.filter((item:any)=>item.id!=selectedProfileId)
+    await AsyncStorage.setItem("profile", JSON.stringify(parsed));
    
     //logica para eliminar el perfil
-
     setModalVisible(false); // Cierra el modal
-    setSelectedProfile(null); // Limpia la selección
+    setSelectedProfileId(null); // Limpia la selección
+    //actualiza listado de perfiles
+    setProfiles(parsed)
+
   };
 
-  const cancelDelete = () => {
-    console.log("Eliminación cancelada");
+  const cancelDelete = () => {    
     setModalVisible(false);
-    setSelectedProfile(null);
+    setSelectedProfileId(null);
   };
 
   const handlePress = () => {
@@ -64,7 +81,7 @@ export default function PerfilesManagementScreen() {
            
               activeOpacity={0.7}
             >
-              <Image source={p.image} style={styles.avatar} resizeMode="contain" />
+              <Image source={{uri: p.image }}  style={styles.avatar} resizeMode="contain" />
               <Text style={styles.profileName}>{p.name}</Text>
             </TouchableOpacity>
 
@@ -95,8 +112,7 @@ export default function PerfilesManagementScreen() {
         title="Eliminar perfil"
         message="¿Esta seguro de eliminar el perfil?"
         onConfirm={confirmDelete}
-        onCancel={cancelDelete}
-        profileName={selectedProfile?.name}
+        onCancel={cancelDelete}  
         />
     </LinearGradient>
   );

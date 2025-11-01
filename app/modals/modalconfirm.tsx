@@ -11,7 +11,7 @@ interface modalProps {
   onCancel: () => void;
   profileName?: string; // opcional por si no se envía
 }
-export default function ModalConfirm({ visible, title, message, onConfirm, onCancel, profileName }:modalProps) {
+export default function ModalConfirm({ visible, title, message, onConfirm, onCancel }:modalProps) {
   return (
     <Modal
       animationType="fade"

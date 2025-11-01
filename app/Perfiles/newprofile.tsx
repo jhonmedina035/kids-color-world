@@ -1,3 +1,5 @@
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -10,11 +12,19 @@ export default function ConfigProfileScreen() {
   const [image, setImage] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState(''); // <-- Nuevo estado
 
-  const handlePress = () => {
-    alert(`Hola, ${name || 'desconocido'}! Dificultad: ${selectedDifficulty || 'No seleccionada'}`);
-  };
 
-  const saveProfile = () => {
+  const  saveProfile = async () => {
+
+    const info ={ name: name, difficultyLevel:selectedDifficulty, image: image,id:0 }
+    
+    const storedData = await AsyncStorage.getItem("profile");
+    const prevData = storedData ? JSON.parse(storedData) : [];
+    const idProfile= prevData.length+1
+    info.id=idProfile
+
+    prevData.push(info);
+    await AsyncStorage.setItem("profile", JSON.stringify(prevData));
+    
     router.navigate('/Perfiles')
   };
 
@@ -30,10 +40,12 @@ export default function ConfigProfileScreen() {
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
+       base64: true,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+      setImage(base64Image);
     }
   };
 
